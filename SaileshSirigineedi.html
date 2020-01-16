@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Sailesh Sirigineedi's Assignment 7</title>
+</head>
+<body style="background-color: tomato">
+<script>
+function Engine(description1,mpg1,maxSpeed1){
+	var description;
+	var mpg;
+	var maxSpeed;
+	if(description1.length==0){
+		description = "Generic Engine";
+	}
+	else{
+		description = description1;
+	}
+	if(mpg1 < 0){
+		mpg = 0;
+	}
+	else{
+		mpg = mpg1;
+	}
+	if(maxSpeed1<0){
+		maxSpeed = 0;
+	}
+	else{
+		maxSpeed = maxSpeed1;
+	}
+	this.getDescription = function(){
+		return description;
+	};
+	this.getMpg = function(){
+		return mpg;
+	};
+	this.getMaxSpeed = function(){
+		return maxSpeed;
+	}
+}
+function GasTank(capacity1){
+	var capacity;
+	var level;
+	if(capacity1 > 0){
+		capacity = capacity1;
+	}
+	else{
+		capacity = 0;
+	}
+	level = 0;
+	this.getCapacity = function(){
+		return capacity;
+	};
+	this.getLevel = function(){
+		return level;
+	};
+	this.setLevel = function(levelIn){
+		if(levelIn < 0){
+			level = 0;
+		}
+		else if(levelIn > capacity){
+			level = capacity;
+		}
+		else{
+			level = levelIn;
+		}
+	};
+}
+function Auto(description1, maxFuelCapacity1, engine1){
+	var description;
+	var x = 0;
+	var y = 0;
+	var gasTank;
+	var engine;
+	if(description1.length==0){
+		description = "Generic Auto";
+	}
+	else{
+		description = description1;
+	}
+	if(engine1==null || typeof engine1 ==='undefined'){
+		engine = new Engine("",0,0);
+	}
+	else{
+		engine = engine1;
+	}
+	gasTank = new GasTank(maxFuelCapacity1);
+	this.getX = function(){
+		return x;
+	};
+	this.getY = function(){
+		return y;
+	};
+	this.getFuelLevel = function(){
+		return gasTank.getLevel();
+	};
+	this.getMpg = function(){
+		return engine.getMpg();
+	};
+	this.getMaxSpeed = function(){
+		return engine.getMaxSpeed();
+	};
+	this.getDescription = function(){
+		return description + " (engine: " +  engine.getDescription() + "), fuel: " + (+this.getFuelLevel()).toFixed(2) + "/" + gasTank.getCapacity() + ",location: (" + (+this.getX()).toFixed(2) + "," + (+this.getY()).toFixed(2) + ")";	
+	};
+	this.fillUp = function(){
+		gasTank.setLevel(gasTank.getCapacity());
+	};
+	this.drive = function(distance, xRatio, yRatio){
+		var gallonsUsed = distance/this.getMpg();
+		if(gallonsUsed > this.getFuelLevel()){
+			distance = this.getFuelLevel() * this.getMpg();
+			gallonsUsed = this.getFuelLevel();
+			window.alert("Ran out of gas after driving " + distance + " miles");
+		}
+		var factor = distance / Math.sqrt(xRatio*xRatio + yRatio*yRatio);
+		var distanceX = factor * xRatio;
+		var distanceY = factor * yRatio;
+		x +=distanceX;
+		y +=distanceY;
+		var currentLevel = this.getFuelLevel() - gallonsUsed;
+		gasTank.setLevel(currentLevel);
+		return distance;
+	};
+}
+function createAuto(){
+	auto = new Auto(document.getElementById('autoDescription').value,document.getElementById('maxFuelCapacity').value,new Engine(document.getElementById("engineDescription").value,document.getElementById('mpg').value,document.getElementById('maxSpeed').value));
+	auto.fillUp();
+	document.getElementById('information').innerHTML = auto.getDescription();
+	document.getElementById('second').style.display = 'block';
+	return false;
+}
+function driving(){
+	auto.drive(document.getElementById('milesToDrive').value,document.getElementById('xRatio').value,document.getElementById('yRatio').value);
+	document.getElementById('information2').innerHTML = auto.getDescription();
+}
+</script>
+<h1>Sailesh Sirigineedi's Assignment 7</h1>
+<form id="auto" onsubmit="return false">
+Engine Description:
+<input id="engineDescription" type="text" name="Engine Description" value="default engine"><br>
+Miles Per Gallon:
+<input id="mpg" type="number" step="0.01" name="Miles per Gallon" value=0><br>
+Max Speed:
+<input id="maxSpeed" type="number" step="0.01" name="Max Speed" value=0><br>
+Auto Description:
+<input id="autoDescription" type="text" name="Auto Description" value="default auto"><br>
+Max Fuel Capacity:
+<input id="maxFuelCapacity" type="number" step="0.01" name="Max Fuel Capcity" value=0><br>
+<input type="submit" onsubmit="return false" onclick="createAuto()" value="Create the Auto">
+</form>
+<p id="information"></p>
+<form id="second" style="display:none" onsubmit="return false">
+Miles To Drive:
+<input id="milesToDrive" type="number" name ="Miles to Drive"><br>
+X Ratio:
+<input id="xRatio" type="number" step="0.01" name="X Ratio"><br>
+Y Ratio:
+<input id="yRatio" type="number" step="0.01" name="Y Ratio"><br>
+<button onclick="driving()">Drive the auto</button>
+</form>
+<p id ="information2"></p>
+</body>
+<html>
